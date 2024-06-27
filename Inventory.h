@@ -11,6 +11,7 @@ private:
 public:
     ~Inventory();
     void addCondiment(Condiment* condiment);
+    void removeCondiment(const std::string &name);
     void listCondiments() const;
 };
 

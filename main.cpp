@@ -14,5 +14,10 @@ int main() {
     std::cout << "Condiments in inventory:" << std::endl;
     inventory.listCondiments();
 
+    inventory.removeCondiment("Mustard");
+
+    std::cout << "Condiments in inventory after removing Mustard:" << std::endl;
+    inventory.listCondiments();
+
     return 0;
 }
