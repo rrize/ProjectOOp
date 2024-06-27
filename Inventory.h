@@ -3,6 +3,7 @@
 
 #include "Condiment.h"
 #include <vector>
+#include <string>
 
 class Inventory {
 private:
@@ -13,6 +14,7 @@ public:
     void addCondiment(Condiment* condiment);
     void removeCondiment(const std::string &name);
     void listCondiments() const;
+    void orderCondiment(const std::string &name);
 };
 
 #endif
