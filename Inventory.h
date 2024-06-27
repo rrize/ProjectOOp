@@ -15,6 +15,7 @@ public:
     void removeCondiment(const std::string &name);
     void listCondiments() const;
     void orderCondiment(const std::string &name);
+    const std::vector<Condiment*>& getCondiments() const;
 };
 
 #endif

@@ -50,3 +50,7 @@ void Inventory::orderCondiment(const std::string &name) {
         std::cout << "Condiment not recognized. Order failed." << std::endl;
     }
 }
+
+const std::vector<Condiment*>& Inventory::getCondiments() const {
+    return condiments;
+}
