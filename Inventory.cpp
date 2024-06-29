@@ -1,7 +1,7 @@
 #include "Inventory.h"
-#include "Ketchup.h"
-#include "Mustard.h"
-#include "Relish.h"
+#include "KetchupFeature.h"
+#include "MustardFeature.h"
+#include "RelishFeature.h"
 #include <iostream>
 #include <algorithm>
 #include <map>
@@ -41,13 +41,29 @@ void Inventory::listCondiments() const {
 
 void Inventory::orderCondiment(const std::string &name) {
     if (name == "Ketchup") {
-        addCondiment(new Ketchup());
+        addCondiment(new Condiment("Ketchup", new KetchupFeature()));
     } else if (name == "Mustard") {
-        addCondiment(new Mustard());
+        addCondiment(new Condiment("Mustard", new MustardFeature()));
     } else if (name == "Relish") {
-        addCondiment(new Relish());
+        addCondiment(new Condiment("Relish", new RelishFeature()));
     } else {
         std::cout << "Condiment not recognized. Order failed." << std::endl;
+    }
+}
+
+void Inventory::setCondimentPrice(const std::string &name, double price) {
+    for (Condiment* condiment : condiments) {
+        if (condiment->getName() == name) {
+            condiment->setPrice(price);
+        }
+    }
+}
+
+void Inventory::setCondimentFeature(const std::string &name, Feature* feature) {
+    for (Condiment* condiment : condiments) {
+        if (condiment->getName() == name) {
+            condiment->setFeature(feature);
+        }
     }
 }
 

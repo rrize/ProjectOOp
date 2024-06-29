@@ -15,7 +15,9 @@ public:
     void removeCondiment(const std::string &name);
     void listCondiments() const;
     void orderCondiment(const std::string &name);
+    void setCondimentPrice(const std::string &name, double price);
+    void setCondimentFeature(const std::string &name, Feature* feature);
     const std::vector<Condiment*>& getCondiments() const;
 };
 
-#endif
+#endif // INVENTORY_H

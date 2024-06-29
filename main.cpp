@@ -1,7 +1,10 @@
-#include "Ketchup.h"
-#include "Mustard.h"
-#include "Relish.h"
+#include "KetchupFeature.h"
+#include "MustardFeature.h"
+#include "RelishFeature.h"
+#include "Condiment.h"
 #include "Inventory.h"
+#include "SpicyDecorator.h"
+#include "SweetDecorator.h"
 #include <iostream>
 #include <string>
 #include <cassert>
@@ -9,11 +12,10 @@
 void runTests() {
     {
         Inventory inventory;
-        inventory.addCondiment(new Ketchup());
-        inventory.addCondiment(new Mustard());
-        inventory.addCondiment(new Relish());
+        inventory.addCondiment(new Condiment("Ketchup", new SpicyDecorator(new KetchupFeature())));
+        inventory.addCondiment(new Condiment("Mustard", new MustardFeature()));
+        inventory.addCondiment(new Condiment("Relish", new SweetDecorator(new RelishFeature())));
 
-        // Debug output to show contents of inventory
         std::cout << "Contents after adding condiments:" << std::endl;
         inventory.listCondiments();
 
@@ -22,6 +24,7 @@ void runTests() {
         int relishCount = 0;
 
         for (const auto& condiment : inventory.getCondiments()) {
+            std::cout << "Condiment: " << condiment->getName() << ", Feature: " << condiment->applyFeature() << std::endl;
             if (condiment->getName() == "Ketchup") ketchupCount++;
             if (condiment->getName() == "Mustard") mustardCount++;
             if (condiment->getName() == "Relish") relishCount++;
@@ -40,10 +43,10 @@ void runTests() {
 
     {
         Inventory inventory;
-        inventory.addCondiment(new Ketchup());
-        inventory.addCondiment(new Mustard());
-        inventory.addCondiment(new Relish());
-        inventory.addCondiment(new Ketchup());
+        inventory.addCondiment(new Condiment("Ketchup", new SpicyDecorator(new KetchupFeature())));
+        inventory.addCondiment(new Condiment("Mustard", new MustardFeature()));
+        inventory.addCondiment(new Condiment("Relish", new SweetDecorator(new RelishFeature())));
+        inventory.addCondiment(new Condiment("Ketchup", new SpicyDecorator(new KetchupFeature())));
 
         inventory.removeCondiment("Ketchup");
 
@@ -55,6 +58,7 @@ void runTests() {
         int relishCount = 0;
 
         for (const auto& condiment : inventory.getCondiments()) {
+            std::cout << "Condiment: " << condiment->getName() << ", Feature: " << condiment->applyFeature() << std::endl;
             if (condiment->getName() == "Ketchup") ketchupCount++;
             if (condiment->getName() == "Mustard") mustardCount++;
             if (condiment->getName() == "Relish") relishCount++;
@@ -79,9 +83,9 @@ int main() {
 
     Inventory inventory;
 
-    inventory.addCondiment(new Ketchup());
-    inventory.addCondiment(new Mustard());
-    inventory.addCondiment(new Relish());
+    inventory.addCondiment(new Condiment("Ketchup", new SpicyDecorator(new KetchupFeature())));
+    inventory.addCondiment(new Condiment("Mustard", new MustardFeature()));
+    inventory.addCondiment(new Condiment("Relish", new SweetDecorator(new RelishFeature())));
 
     std::string command;
 
@@ -89,7 +93,7 @@ int main() {
         std::cout << "\nCondiments in inventory:" << std::endl;
         inventory.listCondiments();
 
-        std::cout << "Enter a command (order, remove, exit): ";
+        std::cout << "Enter a command (order, remove, decorate, setprice, exit): ";
         std::getline(std::cin, command);
 
         if (command == "exit") {
@@ -104,6 +108,45 @@ int main() {
             std::cout << "Enter the name of the condiment to order: ";
             std::getline(std::cin, condimentToOrder);
             inventory.orderCondiment(condimentToOrder);
+        } else if (command == "setprice") {
+            std::string condimentToPrice;
+            double price;
+            std::cout << "Enter the name of the condiment to set price: ";
+            std::getline(std::cin, condimentToPrice);
+            std::cout << "Enter the price: ";
+            std::cin >> price;
+            std::cin.ignore();
+            inventory.setCondimentPrice(condimentToPrice, price);
+        } else if (command == "decorate") {
+            std::string condimentToDecorate;
+            std::string decoration;
+            std::cout << "Enter the name of the condiment to decorate: ";
+            std::getline(std::cin, condimentToDecorate);
+            std::cout << "Enter the decoration (spicy/sweet): ";
+            std::getline(std::cin, decoration);
+            Feature* newFeature = nullptr;
+            for (const auto& condiment : inventory.getCondiments()) {
+                if (condiment->getName() == condimentToDecorate) {
+                    std::string currentFeature = condiment->applyFeature();
+                    if ((decoration == "spicy" && currentFeature.find("spice") != std::string::npos) ||
+                        (decoration == "sweet" && currentFeature.find("sweetness") != std::string::npos)) {
+                        std::cout << condimentToDecorate << " already has the " << decoration << " feature." << std::endl;
+                        newFeature = nullptr;
+                        break;
+                    }
+                }
+            }
+
+            if (newFeature == nullptr && decoration == "spicy") {
+                newFeature = new SpicyDecorator(new KetchupFeature());
+            } else if (newFeature == nullptr && decoration == "sweet") {
+                newFeature = new SweetDecorator(new KetchupFeature());
+            } else if (newFeature == nullptr) {
+                std::cout << "Unknown decoration type." << std::endl;
+                continue;
+            }
+
+            inventory.setCondimentFeature(condimentToDecorate, newFeature);
         } else {
             std::cout << "Invalid command." << std::endl;
         }
